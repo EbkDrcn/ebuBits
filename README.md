@@ -1,6 +1,7 @@
-🛰️ ebuBits Protocol
+E.B.U.P. (Extensible Binary User Protocol)
+A lightweight, asynchronous, and dependency-free UDP networking layer for distributed systems.
 
-ebuBits, Python ile yazılmış, hafif ve temel (basic) seviyede bir ağ iletişim protokolüdür. Karmaşık güvenlik katmanlarından arındırılmış, doğrudan "veriyi gönder ve al" mantığına odaklanan eğitimsel ve hobi amaçlı bir projedir.
+EBUP, Python ile yazılmış, hafif ve temel (basic) seviyede bir ağ iletişim protokolüdür. Karmaşık güvenlik katmanlarından arındırılmış, doğrudan "veriyi gönder ve al" mantığına odaklanan eğitimsel ve hobi amaçlı bir projedir.
 
 🛠️ Nasıl Çalışır? (Packet Structure)
 ebuBits, her veriyi özel bir paket yapısına sarar. Paketler ağ üzerinden JSON formatında transfer edilir:
