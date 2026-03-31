@@ -87,12 +87,15 @@ class ebuBits :
 
     def isAvailable(self, destination, responseTime = 3):
         self.sendPocket(destination, "isAvailableCheck")
-        self.ackTimer = time.time()
-        self.requestedACK = f"ACK_RESPONSE_POSITIVE_{destination}"
-        while time.time() - self.ackTimer < responseTime :
-            if self.requestedACK in self.buffer:
-                print(f"{destination} system is available")
-                self.buffer.remove(self.requestedACK)
+        ackTimer = time.time()
+        echoTimer = time.perf_counter()
+
+        requestedACK = f"ACK_RESPONSE_POSITIVE_{destination}"
+        while time.time() - ackTimer < responseTime :
+            if requestedACK in self.buffer:
+                latency = (time.perf_counter() - echoTimer)*1000
+                print(f"{destination} system is available. Latency -> {latency:.2f} ms")
+                self.buffer.remove(requestedACK)
                 return True
             time.sleep(0.1)
         print(f"Request to system {destination} timed out")
