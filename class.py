@@ -85,13 +85,13 @@ class ebuBits :
                 else:
                     print(f"Başkasına gönderilen bir mesaj bulundu")
 
-    def isAvailable(self, destination, responseTime = 3):
+    def isAvailable(self, destination, timeout = 3):
         self.sendPocket(destination, "isAvailableCheck")
         ackTimer = time.time()
         echoTimer = time.perf_counter()
 
         requestedACK = f"ACK_RESPONSE_POSITIVE_{destination}"
-        while time.time() - ackTimer < responseTime :
+        while time.time() - ackTimer < timeout :
             if requestedACK in self.buffer:
                 latency = (time.perf_counter() - echoTimer)*1000
                 print(f"{destination} system is available. Latency -> {latency:.2f} ms")
