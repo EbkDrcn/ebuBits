@@ -28,7 +28,7 @@ class EBUProtocol :
         
         self.buffer = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.socketopt(socket.SOL_SOCKET, socket.SOL_BROADCAST, 1)
+        self.socket.setsocketopt(socket.SOL_SOCKET, socket.SOL_BROADCAST, 1)
 
         try:
             self.socket.bind(('0.0.0.0', self.systemPort))
@@ -106,7 +106,7 @@ class EBUProtocol :
 
                     elif payload == self.discoverySearch:
                         self.sendPocket(senderID, self.discoveryAns)
-                        print(f"Discovery search from {sender_ID} , answered.")
+                        print(f"Discovery search from {senderID} , answered.")
 
                     elif payload == self.discoveryAns:
                         self.buffer.append(f"DISCOVERY_ANS_FROM_{senderID}")
@@ -145,23 +145,25 @@ class EBUProtocol :
         discoveryTimer = time.time()
         expectedDiscovery = "DISCOVERY_ANS_FROM_"
         print(f"Discovery call for {timeout} seconds.")
+
+        answers = []
         
         while time.time() - discoveryTimer < timeout:
             for item in list(self.buffer):
                 if isinstance(item, str) and item.startswith(expectedDiscovery):
                     foundIP = item.replace(expectedDiscovery, "")
 
-                    if foundIP not in answers:
+                    if foundIP not in answers and foundIP != self.systemID:
                         answers.append(foundIP)
                         print(f"System {foundIP} answered")
-                    
+
                     self.buffer.remove(item)
             time.sleep(0.1)
 
         if not answers:
             print(f"There is no answer to discovery call")
         else:
-            print(f"There is {lenght(answers)} answers and from {answers}")
+            print(f"There is {len(answers)} answers and from {answers}")
         
         return answers
 
