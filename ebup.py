@@ -14,6 +14,9 @@ class EBUProtocol :
     msgTypeError = {"type":"msgInfo", "data":"msg_returned_type_error"}
     discoverySearch = {"type":"discovery", "data":"discovery"}
     discoveryAns = {"type":"discovery", "data":"discovery_here"}
+    message = {"type":"msg", "data":"", "priority":False}
+
+    addressBook = []
 
     def __init__(self, systemID = None, systemPort = defaultPort):
         if systemID is None:
@@ -55,10 +58,12 @@ class EBUProtocol :
         
         return ip
 
-    def sendPocket(self, destination,  data):
+    def sendPocket(self, destination,  data, priority = False):
+        if priority == True:
+            data["priority"] = True
 
         if not isinstance(data,dict):
-            data = {"type":"msg", "data":data}
+            data = {"type":"msg", "data":data, "priority":priority}
 
         packet = [  self.starterBit,
                     self.systemID,
@@ -102,7 +107,7 @@ class EBUProtocol :
                         self.buffer.append(f"ACK_RESPONSE_POSITIVE_{senderID}")
 
                     elif payload == self.msgRecieved:
-                        print(f"Your last message to {senderID} is sended") 
+                        print(f"Your priority message to {senderID} is sended") 
 
                     elif payload == self.discoverySearch:
                         self.sendPocket(senderID, self.discoveryAns)
@@ -115,12 +120,14 @@ class EBUProtocol :
                     elif payload.get("type") == "msg":
                         print(f"\n [!] Mesaj alındı. Kaynak : {senderID}")
                         print(f"İçerik : {payload.get("data")} \n")
-                        self.sendPocket(senderID,self.msgRecieved)
 
                     else:
                         print(f"Unknown type of message recieved.")
                         self.sendPocket(senderID, self.msgTypeError)
                 
+                    if payload.get("priority") == True:
+                        self.sendPocket(senderID, self.msgRecieved)
+
                 else:
                     print(f"There is a message to somebody else on the network")
 
@@ -165,6 +172,19 @@ class EBUProtocol :
         else:
             print(f"There is {len(answers)} answers and from {answers}")
         
-        return answers
+        if self.setAddressBook == True:
+            self.updateAddressBook(answers)
+        else:
+            self.adressBook = []
 
-                        
+        return answers
+    
+    def updateAddressBook(self, answers):
+        for i in range(len(answers)):
+            if answers[i] not in self.adressBook and answers[i] != self.systemID:
+                self.adressBook.append({"ipAdress":answers[i], "createdTime":time.time()})
+
+        return self.adressBook
+    
+    
+        
